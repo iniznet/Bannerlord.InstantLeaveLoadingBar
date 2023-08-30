@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Reflection;
+using HarmonyLib;
 using TaleWorlds.MountAndBlade;
 
 namespace InstantLeaveLoadingBar
@@ -9,7 +10,7 @@ namespace InstantLeaveLoadingBar
         {
             base.OnSubModuleLoad();
             Messenger.Prefix("InstantLeaveLoadingBar");
-            new Harmony("mod.bannerlord.instantleaveloadingbar").PatchAll();
+            new Harmony("mod.bannerlord.InstantLeaveLoadingBar").PatchAll(Assembly.GetExecutingAssembly());
         }
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
