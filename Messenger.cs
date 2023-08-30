@@ -12,7 +12,7 @@ namespace InstantLeaveLoadingBar
             Error,
             Success,
         }
-        public string prefix;
+        public string prefix = "";
         private static Messenger instance = null;
 
         public static Messenger Current()

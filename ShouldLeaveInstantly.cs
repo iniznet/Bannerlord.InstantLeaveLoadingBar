@@ -6,23 +6,21 @@ using TaleWorlds.MountAndBlade.ViewModelCollection;
 
 namespace InstantLeaveLoadingBar
 {
-    [HarmonyPatch]
-    public class MissionGauntletLeaveViewPatch
+    [HarmonyPatch(typeof(MissionGauntletLeaveView), "OnMissionTick")]
+    internal class ShouldLeaveInstantly
     {
         protected static bool isFirstPress = true;
         protected static float doubleTapThreshold = 0.5f;
         protected static float lastPressTime = 0f;
         protected static GameKey leaveKey = HotKeyManager.GetCategory("Generic").GetGameKey("Leave");
 
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(MissionGauntletLeaveView), "OnMissionTick")]
-        static void ShouldPlayerLeaveInstantly(ref MissionLeaveVM ____dataSource)
+        private static void Postfix(ref MissionLeaveVM ____dataSource)
         {
             Mission currentMission = Mission.Current;
             float currentTime = currentMission.CurrentTime;
             bool leaveKeyPressed = Input.IsPressed(leaveKey.KeyboardKey.InputKey) || Input.IsPressed(leaveKey.ControllerKey.InputKey);
             bool ctrlKeyPressed = Input.IsDown(InputKey.LeftControl) || Input.IsDown(InputKey.RightControl);
-            bool shouldLeave = checkDoubleTap(currentTime, leaveKeyPressed) || checkInstantLeave(ctrlKeyPressed, leaveKeyPressed);
+            bool shouldLeave = CheckDoubleTap(currentTime, leaveKeyPressed) || CheckCombination(ctrlKeyPressed, leaveKeyPressed);
 
             if (!shouldLeave)
             {
@@ -32,7 +30,7 @@ namespace InstantLeaveLoadingBar
             LeaveMission(currentMission, ____dataSource);
         }
 
-        private static bool checkDoubleTap(float currentTime, bool leavePressed)
+        private static bool CheckDoubleTap(float currentTime, bool leavePressed)
         {
             if (!leavePressed)
             {
@@ -59,7 +57,7 @@ namespace InstantLeaveLoadingBar
             return true;
         }
 
-        private static bool checkInstantLeave(bool ctrlPressed, bool leavePressed)
+        private static bool CheckCombination(bool ctrlPressed, bool leavePressed)
         {
             return ctrlPressed && leavePressed;
         }
